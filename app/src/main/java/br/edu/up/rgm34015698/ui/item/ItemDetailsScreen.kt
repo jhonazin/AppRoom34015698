@@ -42,6 +42,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -52,14 +53,18 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import br.edu.up.rgm34015698.InventoryTopAppBar
 import br.edu.up.rgm34015698.ui.navigation.NavigationDestination
 import br.edu.up.rgm34015698.R
 import br.edu.up.rgm34015698.data.Item
+import br.edu.up.rgm34015698.data.ItemsRepository
+import br.edu.up.rgm34015698.ui.AppViewModelProvider
 
 import com.example.inventory.ui.theme.InventoryTheme
 
 object ItemDetailsDestination : NavigationDestination {
+
     override val route = "item_details"
     override val titleRes = R.string.item_detail_title
     const val itemIdArg = "itemId"
@@ -71,8 +76,11 @@ object ItemDetailsDestination : NavigationDestination {
 fun ItemDetailsScreen(
     navigateToEditItem: (Int) -> Unit,
     navigateBack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: ItemDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory)
+
 ) {
+    val uiState = viewModel.uiState.collectAsState()
     Scaffold(
         topBar = {
             InventoryTopAppBar(
@@ -95,7 +103,7 @@ fun ItemDetailsScreen(
         }, modifier = modifier
     ) { innerPadding ->
         ItemDetailsBody(
-            itemDetailsUiState = ItemDetailsUiState(),
+            itemDetailsUiState = uiState.value,
             onSellItem = { },
             onDelete = { },
             modifier = Modifier
